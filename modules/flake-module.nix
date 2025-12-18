@@ -6,6 +6,8 @@
   ...
 }:
 {
+  flake.lib.getClanSecret = import ../pkgs/get-clan-secret;
+
   flake.nixosModules = {
     server = {
       imports = [
@@ -111,15 +113,15 @@
     ];
   };
 
-  flake.modules.terranix.base = ./terranix/base.nix;
+  flake.modules.terranix.base = flake-parts-lib.importApply ./terranix/base.nix { inherit self; };
   # use `moduleWithSystem` to give us access to `perSystem`'s `config`
   flake.modules.terranix.with-dns = moduleWithSystem (
     { config }: flake-parts-lib.importApply ./terranix/with-dns.nix { config' = config; }
   );
   flake.modules.terranix.dns = ./terranix/dns.nix;
   flake.modules.terranix.vultr = ./terranix/vultr.nix;
-  flake.modules.terranix.cache = ./terranix/cache.nix;
-  flake.modules.terranix.cache-new = ./terranix/cache-new.nix;
+  flake.modules.terranix.cache = flake-parts-lib.importApply ./terranix/cache.nix { inherit self; };
+  flake.modules.terranix.cache-new = flake-parts-lib.importApply ./terranix/cache-new.nix { inherit self; };
 
   flake.modules.terranix.build01 =
     flake-parts-lib.importApply ../machines/build01/terraform-configuration.nix

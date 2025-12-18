@@ -1,3 +1,4 @@
+{ self }:
 {
   config,
   pkgs,
@@ -6,7 +7,7 @@
 }:
 
 let
-  getClanSecret = import ../../pkgs/get-clan-secret { inherit pkgs; };
+  getClanSecret = self.lib.getClanSecret { inherit pkgs; };
 in
 {
   variable.passphrase = { };
