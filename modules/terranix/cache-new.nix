@@ -6,6 +6,8 @@
 }:
 
 let
+  getClanSecret = import ../../pkgs/get-clan-secret { inherit pkgs; };
+
   # Cache domain
   cache_domain = "cache.clan.lol";
 
@@ -24,45 +26,18 @@ in
 
   # Fastly API key from secrets
   data.external.fastly-api-key = {
-    program = [
-      (lib.getExe (
-        pkgs.writeShellApplication {
-          name = "get-fastly-secret";
-          text = ''
-            jq -n --arg secret "$(clan secrets get fastly-api-key)" '{"secret":$secret}'
-          '';
-        }
-      ))
-    ];
+    program = [ (lib.getExe (getClanSecret "fastly-api-key")) ];
   };
 
   provider.fastly.api_key = config.data.external.fastly-api-key "result.secret";
 
   # B2 credentials from secrets
   data.external.b2-key-id = {
-    program = [
-      (lib.getExe (
-        pkgs.writeShellApplication {
-          name = "get-clan-secret";
-          text = ''
-            jq -n --arg secret "$(clan secrets get b2-key-id)" '{"secret":$secret}'
-          '';
-        }
-      ))
-    ];
+    program = [ (lib.getExe (getClanSecret "b2-key-id")) ];
   };
 
   data.external.b2-application-key = {
-    program = [
-      (lib.getExe (
-        pkgs.writeShellApplication {
-          name = "get-clan-secret";
-          text = ''
-            jq -n --arg secret "$(clan secrets get b2-application-key)" '{"secret":$secret}'
-          '';
-        }
-      ))
-    ];
+    program = [ (lib.getExe (getClanSecret "b2-application-key")) ];
   };
 
   provider.b2.application_key_id = config.data.external.b2-key-id "result.secret";

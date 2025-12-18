@@ -5,6 +5,9 @@
   ...
 }:
 
+let
+  getClanSecret = import ../../pkgs/get-clan-secret { inherit pkgs; };
+in
 {
   variable.passphrase = { };
 
@@ -13,29 +16,11 @@
   terraform.required_providers.vultr.source = "vultr/vultr";
 
   data.external.hcloud-token = {
-    program = [
-      (lib.getExe (
-        pkgs.writeShellApplication {
-          name = "get-clan-secret";
-          text = ''
-            jq -n --arg secret "$(clan secrets get hcloud-token)" '{"secret":$secret}'
-          '';
-        }
-      ))
-    ];
+    program = [ (lib.getExe (getClanSecret "hcloud-token")) ];
   };
 
   data.external.vultr-api-key = {
-    program = [
-      (lib.getExe (
-        pkgs.writeShellApplication {
-          name = "get-clan-secret";
-          text = ''
-            jq -n --arg secret "$(clan secrets get vultr-api-key)" '{"secret":$secret}'
-          '';
-        }
-      ))
-    ];
+    program = [ (lib.getExe (getClanSecret "vultr-api-key")) ];
   };
 
   provider.hcloud.token = config.data.external.hcloud-token "result.secret";
